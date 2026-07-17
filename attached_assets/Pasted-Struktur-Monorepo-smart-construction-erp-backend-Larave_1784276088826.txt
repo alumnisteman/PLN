@@ -1,0 +1,2073 @@
+Struktur Monorepo
+smart-construction-erp/
+│
+├── backend/                      # Laravel 12
+│
+├── frontend/                     # Next.js 15
+│
+├── docker/
+│   ├── nginx/
+│   │   ├── default.conf
+│   │   └── Dockerfile
+│   │
+│   ├── php/
+│   │   ├── Dockerfile
+│   │   ├── php.ini
+│   │   └── supervisor.conf
+│   │
+│   ├── postgres/
+│   │   └── init.sql
+│   │
+│   ├── redis/
+│   │
+│   └── backup/
+│       └── backup.sh
+│
+├── storage/
+│   ├── app/
+│   │   ├── private/
+│   │   │   ├── projects/
+│   │   │   ├── boq/
+│   │   │   ├── drawings/
+│   │   │   ├── contracts/
+│   │   │   ├── invoices/
+│   │   │   ├── material/
+│   │   │   ├── photos/
+│   │   │   ├── qc/
+│   │   │   ├── hse/
+│   │   │   ├── bast/
+│   │   │   ├── reports/
+│   │   │   └── temporary/
+│   │   │
+│   │   └── public/
+│   │
+│   └── logs/
+│
+├── backup/
+│   ├── database/
+│   └── storage/
+│
+├── docs/
+│   ├── api/
+│   ├── database/
+│   ├── ui/
+│   └── deployment/
+│
+├── .env
+├── .env.example
+├── docker-compose.yml
+├── Makefile
+└── README.md
+Backend Structure (Laravel)
+
+Saya tidak akan menggunakan struktur Laravel default sepenuhnya.
+
+Saya lebih suka Clean Architecture.
+
+backend/
+
+app/
+
+├── Actions/
+
+├── Enums/
+
+├── Helpers/
+
+├── Http/
+
+│   ├── Controllers/
+
+│   ├── Middleware/
+
+│   ├── Requests/
+
+│   └── Resources/
+
+├── Models/
+
+├── Modules/
+
+├── Notifications/
+
+├── Observers/
+
+├── Policies/
+
+├── Providers/
+
+├── Repositories/
+
+├── Rules/
+
+├── Services/
+
+├── Traits/
+
+└── Jobs/
+
+Tetapi yang paling penting adalah folder Modules.
+
+Modular Architecture
+Modules/
+
+Auth/
+
+Dashboard/
+
+Project/
+
+Contract/
+
+Tender/
+
+Progress/
+
+Material/
+
+Warehouse/
+
+Purchase/
+
+Vendor/
+
+Finance/
+
+Invoice/
+
+HumanResource/
+
+Equipment/
+
+QC/
+
+HSE/
+
+Document/
+
+Drawing/
+
+Report/
+
+Notification/
+
+Setting/
+
+Master/
+
+Setiap module berdiri sendiri.
+
+Misalnya:
+
+Modules/
+
+Project/
+
+├── Controllers/
+
+├── Models/
+
+├── Services/
+
+├── Repository/
+
+├── Policies/
+
+├── Requests/
+
+├── Resources/
+
+├── Routes/
+
+├── Events/
+
+├── Jobs/
+
+├── Notifications/
+
+└── Database/
+
+    ├── Migrations/
+
+    └── Seeders/
+
+Keuntungan:
+
+Project tidak akan berantakan walaupun nanti ada 300+ tabel.
+
+Frontend Structure
+frontend/
+
+src/
+
+├── app/
+
+├── components/
+
+├── layouts/
+
+├── modules/
+
+├── hooks/
+
+├── services/
+
+├── providers/
+
+├── store/
+
+├── types/
+
+├── utils/
+
+├── lib/
+
+├── constants/
+
+├── styles/
+
+├── assets/
+
+└── middleware.ts
+Modules Frontend
+modules/
+
+dashboard/
+
+project/
+
+contract/
+
+progress/
+
+warehouse/
+
+purchase/
+
+material/
+
+vendor/
+
+finance/
+
+invoice/
+
+drawing/
+
+report/
+
+setting/
+
+auth/
+Component
+components/
+
+ui/
+
+form/
+
+table/
+
+modal/
+
+chart/
+
+map/
+
+editor/
+
+upload/
+
+layout/
+
+sidebar/
+
+header/
+
+footer/
+
+timeline/
+
+kanban/
+
+calendar/
+Shared Service
+services/
+
+api.ts
+
+auth.ts
+
+project.ts
+
+dashboard.ts
+
+warehouse.ts
+
+vendor.ts
+
+report.ts
+State Management
+
+Saya tidak memakai Redux.
+
+Lebih modern:
+
+TanStack Query
+
++
+
+Zustand
+
+TanStack:
+
+Server State
+
+Zustand:
+
+Client State
+
+Jauh lebih ringan.
+
+Database Structure
+database/
+
+migrations/
+
+seeders/
+
+factories/
+
+views/
+
+functions/
+
+procedures/
+
+Ya.
+
+Saya juga akan memakai
+
+PostgreSQL View
+
+Materialized View
+
+Stored Function
+
+Untuk laporan agar cepat.
+
+Master Data
+Master
+
+↓
+
+Province
+
+City
+
+District
+
+Village
+
+Bank
+
+Unit PLN
+
+Position
+
+Role
+
+Permission
+
+Document Type
+
+Project Type
+
+Material Category
+
+Equipment Category
+Permission
+
+Bukan hanya Role.
+
+Tetapi
+
+Role
+
+↓
+
+Menu
+
+↓
+
+Permission
+
+↓
+
+Action
+
+Contoh
+
+Project
+
+↓
+
+View
+
+Create
+
+Edit
+
+Delete
+
+Approve
+
+Export
+
+Sangat fleksibel.
+
+Dashboard Widget
+
+Widget bisa dipilih user.
+
+Misalnya
+
+Direktur
+
+Cashflow
+
+Profit
+
+Project
+
+Invoice
+
+Project Manager
+
+Progress
+
+Material
+
+Worker
+
+QC
+
+Warehouse
+
+Stock
+
+Purchase
+
+Delivery
+Notification Center
+
+Semua masuk satu tempat.
+
+Approval
+
+Material
+
+QC
+
+HSE
+
+Invoice
+
+Reminder
+
+Document
+
+Chat
+Timeline
+
+Semua aktivitas proyek muncul.
+
+08:00
+
+Material Datang
+
+↓
+
+09:30
+
+QC Approved
+
+↓
+
+11:00
+
+Progress 35%
+
+↓
+
+13:00
+
+Invoice Upload
+
+Mirip Facebook Timeline.
+
+Activity Log
+
+Setiap perubahan data.
+
+User
+
+↓
+
+Tanggal
+
+↓
+
+Field Lama
+
+↓
+
+Field Baru
+
+↓
+
+IP
+
+↓
+
+Browser
+Audit Trail
+
+Tidak boleh bisa dihapus.
+
+Report Engine
+
+Bukan report biasa.
+
+User bisa memilih
+
+Kolom
+
+Filter
+
+Sorting
+
+Grouping
+
+Export
+
+Tanpa programmer.
+
+Future Module
+
+Karena modular.
+
+Nanti mudah menambah
+
+CRM
+Payroll
+Asset Management
+Fleet Management
+GPS Tracking
+IoT Meter
+Drone Inspection
+BIM
+AI Vision
+Face Recognition
+Digital Signature
+e-Approval
+Customer Portal
+Vendor Portal
+Roadmap Pengembangan
+
+Saya membaginya menjadi beberapa fase agar pengerjaan lebih terstruktur:
+
+Phase 1 (Core System)
+Login & RBAC
+Dashboard
+Master Data
+Project
+Kontrak
+Dokumen
+Timeline
+Activity Log
+Phase 2 (Operasional Proyek)
+Progress Lapangan
+Material
+Gudang
+Peralatan
+SDM
+QC
+HSE
+WBS
+Kurva S
+Phase 3 (Komersial)
+Purchase Request
+Purchase Order
+Vendor
+Invoice
+Termin
+Cashflow
+Laporan
+Phase 4 (Kolaborasi)
+Chat Internal
+Notifikasi Realtime
+Kalender
+Portal Owner
+Portal Vendor
+PWA & Offline Mode
+Phase 5 (Smart Features)
+OCR Dokumen
+AI Assistant
+Dashboard Prediktif
+Analisis Risiko Proyek
+Integrasi WhatsApp & Email
+Digital Signature
+Pendapat saya
+
+Untuk aplikasi sebesar ini (perkiraan 250–350 tabel database dan 80–120 modul), menggunakan arsitektur modular sejak awal akan jauh lebih mudah dipelihara dibandingkan struktur Laravel standar. Dengan pendekatan ini, penambahan fitur baru di masa depan tidak akan mengganggu modul yang sudah ada, sehingga aplikasi tetap rapi dan skalabel meskipun terus berkembang.
+
+lanjutkan
+
+Bagus. Saya akan naikkan lagi level arsitekturnya agar setara aplikasi ERP enterprise seperti Odoo atau SAP, tetapi tetap menggunakan Laravel + Next.js yang lebih ringan.
+
+1. Arsitektur Keseluruhan
+                    Internet
+                        │
+                 Nginx Reverse Proxy
+                        │
+          ┌─────────────┴──────────────┐
+          │                            │
+     Next.js Frontend             Laravel API
+          │                            │
+          └─────────────┬──────────────┘
+                        │
+                 Service Layer
+                        │
+        ┌───────────────┼────────────────┐
+        │               │                │
+    PostgreSQL        Redis         Local Storage
+
+Tidak menggunakan microservice pada tahap awal. Modular Monolith lebih sederhana, lebih cepat dikembangkan, dan tetap dapat dipisah menjadi microservice jika suatu saat diperlukan.
+
+2. Domain
+
+Saya membagi sistem menjadi beberapa domain besar.
+
+Core
+
+Project
+
+Engineering
+
+Operation
+
+Procurement
+
+Warehouse
+
+Finance
+
+HR
+
+HSE
+
+Quality
+
+Reporting
+
+System
+3. Module
+Core
+Authentication
+
+Authorization
+
+User
+
+Role
+
+Permission
+
+Menu
+
+Notification
+
+Activity Log
+
+Audit Trail
+
+Attachment
+
+Setting
+Project
+Project
+
+Contract
+
+Client
+
+Location
+
+Milestone
+
+WBS
+
+Schedule
+
+Timeline
+
+Issue
+
+Risk
+
+Meeting
+Engineering
+Drawing
+
+RFI
+
+Method Statement
+
+Shop Drawing
+
+As Built Drawing
+
+Revision
+
+Approval
+
+Engineering Document
+Procurement
+Purchase Request
+
+Purchase Order
+
+Supplier
+
+Quotation
+
+Comparison
+
+Receiving
+
+Return
+
+Payment Request
+Warehouse
+Warehouse
+
+Material
+
+Category
+
+Stock
+
+Movement
+
+Transfer
+
+Adjustment
+
+Stock Opname
+Equipment
+Equipment
+
+Category
+
+Maintenance
+
+Calibration
+
+Fuel
+
+Operator
+
+Inspection
+Human Resource
+Employee
+
+Attendance
+
+Overtime
+
+Skill
+
+Certificate
+
+Medical
+
+Training
+Quality
+Inspection
+
+Checklist
+
+NCR
+
+Punch List
+
+Corrective Action
+
+Testing
+HSE
+Permit
+
+Safety Talk
+
+Incident
+
+Near Miss
+
+JSA
+
+HIRADC
+
+APD
+
+Inspection
+Finance
+Budget
+
+Cashflow
+
+Invoice
+
+Payment
+
+Termin
+
+Retention
+
+Tax
+
+Cost Control
+Reporting
+Daily Report
+
+Weekly Report
+
+Monthly Report
+
+Executive Dashboard
+
+Export
+
+Analytics
+4. Database
+
+Saya tidak ingin tabel saling berantakan.
+
+Semua tabel memakai pola yang sama.
+
+Misalnya:
+
+projects
+
+project_members
+
+project_locations
+
+project_timelines
+
+project_progress
+
+project_documents
+
+project_photos
+
+project_comments
+
+project_histories
+
+Material
+
+materials
+
+material_categories
+
+material_units
+
+material_stocks
+
+material_movements
+
+material_requests
+
+material_transactions
+
+Equipment
+
+equipment
+
+equipment_categories
+
+equipment_services
+
+equipment_logs
+
+equipment_photos
+
+Sangat konsisten.
+
+5. Base Table
+
+Semua tabel mempunyai field standar.
+
+id
+
+uuid
+
+created_by
+
+updated_by
+
+deleted_by
+
+created_at
+
+updated_at
+
+deleted_at
+
+Jadi audit data menjadi mudah.
+
+6. UUID
+
+Saya menyarankan tetap memakai integer sebagai primary key untuk performa relasi, dan menambahkan UUID sebagai identitas publik.
+
+id = 125
+
+uuid = 8e0fd6e7-xxxx-xxxx
+
+URL menjadi:
+
+/project/8e0fd6e7....
+
+Lebih aman dibanding expose ID.
+
+7. Attachment System
+
+Saya tidak suka setiap tabel memiliki kolom:
+
+photo
+
+file
+
+document
+
+attachment
+
+Lebih baik satu tabel.
+
+attachments
+
+id
+
+uuid
+
+module
+
+reference_id
+
+file_name
+
+extension
+
+mime
+
+size
+
+path
+
+uploaded_by
+
+Semua module memakai tabel ini.
+
+Misalnya
+
+Project
+
+QC
+
+Invoice
+
+BAST
+
+Material
+
+Drawing
+
+Semua cukup memakai Attachment.
+
+8. Comment System
+
+Sama.
+
+comments
+
+id
+
+module
+
+reference_id
+
+message
+
+created_by
+
+Dipakai oleh semua module.
+
+9. Approval Engine
+
+Jangan hardcode.
+
+Buat engine.
+
+Contoh
+
+Project Progress
+
+↓
+
+Site Engineer
+
+↓
+
+PM
+
+↓
+
+Manager
+
+↓
+
+Director
+
+Invoice
+
+Finance
+
+↓
+
+Manager
+
+↓
+
+Director
+
+Purchase
+
+Warehouse
+
+↓
+
+Purchasing
+
+↓
+
+Manager
+
+Semuanya memakai Approval Engine yang sama.
+
+10. Workflow Engine
+
+Lebih modern lagi.
+
+Misalnya
+
+Project
+
+Draft
+
+↓
+
+Planning
+
+↓
+
+Running
+
+↓
+
+Hold
+
+↓
+
+Completed
+
+↓
+
+Closed
+
+QC
+
+Open
+
+↓
+
+Inspection
+
+↓
+
+Approved
+
+↓
+
+Rejected
+
+↓
+
+Rework
+
+Invoice
+
+Draft
+
+↓
+
+Submitted
+
+↓
+
+Approved
+
+↓
+
+Paid
+
+Workflow dapat dikonfigurasi.
+
+11. Notification Engine
+
+Bukan hanya Laravel Notification.
+
+Buat engine.
+
+Database
+
+Email
+
+Realtime
+
+WhatsApp (opsional)
+
+Web Push (opsional)
+
+Semua module tinggal memanggil engine.
+
+12. Search Engine
+
+Global Search.
+
+Cari
+
+Trafo
+
+Keluar
+
+Material
+
+Project
+
+Invoice
+
+Drawing
+
+Photo
+
+Vendor
+
+Contract
+13. Upload Engine
+
+Semua upload memakai satu service.
+
+Support
+
+image
+pdf
+excel
+docx
+zip
+
+Otomatis
+
+validasi ukuran
+validasi MIME
+rename file
+thumbnail (gambar)
+metadata
+14. Report Engine
+
+Tidak ada query langsung di controller.
+
+Semua laporan dibuat oleh Report Engine.
+
+Misalnya
+
+Project Progress
+
+Material
+
+Finance
+
+HSE
+
+QC
+
+HR
+
+Export
+
+Excel
+
+PDF
+
+CSV
+15. Dashboard Engine
+
+Widget dapat diatur.
+
+User bebas memilih.
+
+Misalnya
+
+Progress
+
+Kurva S
+
+Cashflow
+
+Invoice
+
+Material
+
+Worker
+
+Equipment
+
+Drag & Drop.
+
+16. Audit Engine
+
+Setiap perubahan dicatat.
+
+Field
+
+Nilai Lama
+
+↓
+
+Nilai Baru
+
+↓
+
+Jam
+
+↓
+
+User
+
+↓
+
+IP
+
+Tidak bisa dihapus.
+
+17. AI Ready
+
+Saya akan menyiapkan struktur agar AI mudah diintegrasikan nanti.
+
+Misalnya
+
+ai_conversations
+
+ai_messages
+
+ai_embeddings (opsional)
+
+ai_logs
+
+Tidak langsung dipakai.
+
+Tetapi siap.
+
+18. API Version
+
+Semua endpoint
+
+/api/v1/
+
+Contoh
+
+/api/v1/projects
+
+/api/v1/materials
+
+/api/v1/contracts
+
+/api/v1/dashboard
+
+Kalau nanti ada perubahan besar cukup buat
+
+/api/v2/
+
+Frontend lama tetap berjalan.
+
+19. Coding Standard
+
+Saya menyarankan aturan berikut sejak awal:
+
+PHP: PSR-12 + Laravel Pint.
+TypeScript: ESLint + Prettier.
+Commit: Conventional Commits (feat:, fix:, refactor:, docs:).
+Branch: main, develop, feature/*, hotfix/*.
+Testing: Pest PHP untuk backend, Playwright untuk frontend.
+20. Roadmap Implementasi
+
+Agar proyek tetap terkendali, saya mengusulkan urutan implementasi berikut:
+
+Sprint	Fokus
+1	Setup Docker, Laravel, Next.js, PostgreSQL, Redis, Nginx
+2	Login, RBAC, Master Data, Dashboard
+3	Project, Kontrak, WBS, Timeline
+4	Progress Lapangan, Upload Foto, Dokumen
+5	Material, Gudang, Supplier
+6	Purchase Request & Purchase Order
+7	QC & HSE
+8	SDM & Peralatan
+9	Finance, Invoice, Termin
+10	Report Engine, Dashboard Analytics
+11	Portal Owner & Portal Vendor
+12	PWA, Offline Mode, AI Assistant
+Saran Tambahan
+
+Saya juga menyarankan agar proyek ini memiliki paket UI Design System sendiri (misalnya @erp/ui) yang berisi komponen seperti tabel, formulir, dialog, upload file, timeline, dan dashboard card. Dengan begitu seluruh modul memiliki tampilan yang konsisten dan pengembangan fitur baru menjadi jauh lebih cepat.
+
+Menurut saya, dengan fondasi ini aplikasi akan siap berkembang menjadi ERP khusus kontraktor utilitas (PLN, Telkom, PUPR, Pertamina, dan proyek infrastruktur lainnya), tanpa perlu mengubah arsitektur inti di kemudian hari.
+
+lanjutkan paket UI Design System
+
+Menurut saya, UI Design System adalah investasi terbesar untuk proyek ini. Jangan membuat komponen per halaman. Buat seperti Ant Design, MUI, atau shadcn/ui, tetapi khusus untuk ERP kontraktor.
+
+Saya akan membuat ERP UI Kit.
+
+Struktur
+frontend/
+
+src/
+
+components/
+
+├── ui/
+│
+├── forms/
+│
+├── data-display/
+│
+├── feedback/
+│
+├── navigation/
+│
+├── layout/
+│
+├── charts/
+│
+├── maps/
+│
+├── upload/
+│
+├── project/
+│
+├── warehouse/
+│
+├── finance/
+│
+├── dashboard/
+│
+└── shared/
+UI
+
+Komponen dasar.
+
+ui/
+
+Button
+
+Input
+
+Textarea
+
+NumberInput
+
+CurrencyInput
+
+PhoneInput
+
+PasswordInput
+
+OTPInput
+
+SearchInput
+
+Checkbox
+
+Radio
+
+Switch
+
+Select
+
+MultiSelect
+
+Autocomplete
+
+Combobox
+
+Badge
+
+Avatar
+
+Chip
+
+Alert
+
+Toast
+
+Tooltip
+
+Popover
+
+Dropdown
+
+Dialog
+
+Drawer
+
+Tabs
+
+Accordion
+
+Card
+
+Skeleton
+
+Spinner
+
+Divider
+
+Breadcrumb
+
+Pagination
+
+Progress
+
+CircularProgress
+
+Step
+
+Timeline
+
+Tag
+
+Label
+Form
+forms/
+
+Form
+
+FormField
+
+FormGroup
+
+FormLabel
+
+FormError
+
+FormSection
+
+DatePicker
+
+DateRangePicker
+
+MonthPicker
+
+YearPicker
+
+TimePicker
+
+DateTimePicker
+
+FileInput
+
+ImageInput
+
+SignaturePad
+
+QRCodeScanner
+
+BarcodeScanner
+Data Display
+data-display/
+
+DataTable
+
+TreeTable
+
+Kanban
+
+Calendar
+
+Timeline
+
+List
+
+Description
+
+Statistic
+
+Metric
+
+Carousel
+
+Gallery
+
+ImageViewer
+
+PDFViewer
+
+CodeViewer
+Feedback
+feedback/
+
+ConfirmDialog
+
+DeleteDialog
+
+LoadingPage
+
+LoadingOverlay
+
+EmptyState
+
+ErrorPage
+
+Forbidden
+
+NotFound
+
+SuccessAnimation
+
+WarningCard
+Navigation
+navigation/
+
+Sidebar
+
+Topbar
+
+Menu
+
+MegaMenu
+
+Navbar
+
+CommandPalette
+
+UserMenu
+
+NotificationDropdown
+
+SearchDialog
+Layout
+layout/
+
+DashboardLayout
+
+AuthLayout
+
+ProjectLayout
+
+SettingLayout
+
+Container
+
+Section
+
+PageHeader
+
+Content
+
+SplitPanel
+Chart
+charts/
+
+LineChart
+
+BarChart
+
+PieChart
+
+DonutChart
+
+RadarChart
+
+AreaChart
+
+MixedChart
+
+GaugeChart
+
+Heatmap
+
+GanttChart
+
+S Curve
+
+Cashflow Chart
+Maps
+maps/
+
+LeafletMap
+
+Marker
+
+Route
+
+Cluster
+
+Polygon
+
+Drawing
+
+Measurement
+
+ProjectLocation
+
+EquipmentTracking
+Upload
+upload/
+
+Uploader
+
+ImageUploader
+
+PDFUploader
+
+ExcelUploader
+
+DragDropUploader
+
+PhotoGallery
+
+FileManager
+Dashboard Widget
+dashboard/
+
+Widget
+
+WidgetCard
+
+StatisticCard
+
+MiniChart
+
+ProjectProgress
+
+LatestActivity
+
+RecentInvoice
+
+StockAlert
+
+WorkerAttendance
+
+EquipmentStatus
+
+SafetyAlert
+
+UpcomingDeadline
+Project Component
+project/
+
+ProjectCard
+
+ProjectStatus
+
+ProgressBar
+
+Milestone
+
+WBS Tree
+
+Task Card
+
+Issue Card
+
+Risk Card
+
+Project Timeline
+
+Project Gallery
+Warehouse
+warehouse/
+
+Stock Card
+
+Material Card
+
+Material Table
+
+Warehouse Map
+
+Stock Movement
+
+Stock Summary
+
+QR Generator
+
+QR Scanner
+Finance
+finance/
+
+Invoice Card
+
+Cashflow
+
+Budget
+
+Payment Status
+
+Revenue Chart
+
+Expense Chart
+Shared Component
+shared/
+
+Status Badge
+
+Approval Badge
+
+Priority Badge
+
+User Avatar
+
+User Card
+
+Company Logo
+
+File Preview
+
+Attachment List
+
+Comment Box
+
+Activity Timeline
+
+Audit Timeline
+
+Log Viewer
+Theme
+
+Saya ingin dibuat seperti ERP modern.
+
+Theme
+
+Light
+
+Dark
+
+System
+Color Palette
+Primary
+Blue 600
+
+Karena identik dengan PLN.
+
+Secondary
+
+Slate
+
+Success
+
+Emerald
+
+Warning
+
+Amber
+
+Danger
+
+Red
+
+Info
+
+Sky
+Radius
+
+Jangan terlalu bulat.
+
+10 px
+
+Lebih profesional.
+
+Shadow
+
+Soft.
+
+Tidak berlebihan.
+
+Typography
+
+Saya lebih memilih
+
+Geist
+
+atau
+
+Inter
+
+Keduanya sangat nyaman untuk aplikasi bisnis.
+
+Icon
+
+Lucide React.
+
+Karena ringan.
+
+Animation
+
+Framer Motion.
+
+Digunakan hanya untuk
+
+Dialog
+Sidebar
+Dropdown
+Toast
+Loading
+
+Bukan seluruh halaman.
+
+DataTable
+
+Ini adalah komponen yang paling penting.
+
+Fitur wajib:
+
+✅ Server Side
+
+✅ Sorting
+
+✅ Search
+
+✅ Filter
+
+✅ Export Excel
+
+✅ Export PDF
+
+✅ Column Visibility
+
+✅ Column Resize
+
+✅ Column Pinning
+
+✅ Pagination
+
+✅ Infinite Scroll (opsional)
+
+✅ Drag Column
+
+✅ Save Layout
+
+Misalnya
+
+No
+
+Project
+
+Progress
+
+PIC
+
+Nilai
+
+Status
+
+Action
+
+User bisa menyimpan layout sendiri.
+
+Command Palette
+
+Tekan
+
+CTRL + K
+
+langsung muncul
+
+Cari Project...
+
+Cari Material...
+
+Cari Invoice...
+
+Cari Vendor...
+
+Cari Employee...
+
+Mirip VSCode.
+
+Global Search
+
+Bukan search biasa.
+
+Trafo
+
+langsung muncul
+
+Project
+
+Material
+
+Invoice
+
+Purchase
+
+Drawing
+
+Photo
+
+Employee
+Notification Center
+
+Mirip Facebook.
+
+Hari ini
+
+Kemarin
+
+Minggu lalu
+Activity Feed
+
+Mirip GitHub.
+
+Andi upload Drawing
+
+↓
+
+Budi approve QC
+
+↓
+
+Manager approve Purchase
+
+↓
+
+Invoice dibayar
+File Preview
+
+Tidak perlu download.
+
+Support
+
+PDF
+JPG
+PNG
+DOCX (preview jika memungkinkan)
+XLSX (preview tabel sederhana)
+Dashboard
+
+Bisa Drag & Drop.
+
+Widget dapat dipindah.
+
+Disimpan ke database.
+
+Mobile
+
+Sidebar berubah menjadi Bottom Navigation.
+
+Semua Card otomatis Responsive.
+
+Empty State
+
+Jangan hanya menampilkan:
+
+No Data
+
+Tetapi
+
+📁
+
+Belum ada Project
+
+Klik tombol Tambah Project
+
+untuk membuat Project pertama.
+
+Lebih ramah.
+
+Loading
+
+Skeleton.
+
+Bukan spinner terus.
+
+Error
+
+Gunakan halaman yang informatif.
+
+404
+
+403
+
+500
+
+Offline
+
+Session Expired
+
+UI Library Internal (@erp/ui)
+
+Agar kode tetap bersih dan mudah digunakan di seluruh modul, saya menyarankan membuat paket internal:
+
+frontend/
+└── packages/
+    ├── ui/
+    │   ├── components/
+    │   ├── hooks/
+    │   ├── providers/
+    │   ├── styles/
+    │   ├── icons/
+    │   ├── themes/
+    │   ├── utils/
+    │   ├── index.ts
+    │   └── package.json
+    │
+    ├── config/
+    ├── types/
+    └── utils/
+
+Contoh penggunaan di aplikasi:
+
+import {
+  Button,
+  DataTable,
+  StatusBadge,
+  PageHeader,
+  ConfirmDialog,
+} from "@erp/ui";
+Design Token
+
+Semua warna, spacing, radius, dan tipografi sebaiknya tidak ditulis langsung di komponen, tetapi melalui design tokens.
+
+tokens/
+├── colors.ts
+├── spacing.ts
+├── radius.ts
+├── shadows.ts
+├── typography.ts
+├── zIndex.ts
+└── motion.ts
+
+Dengan begitu, jika suatu saat identitas visual perusahaan berubah (misalnya warna utama bukan lagi biru), perubahan cukup dilakukan di satu tempat tanpa mengubah ratusan komponen.
+
+Menurut saya, kombinasi Next.js 15 + Tailwind CSS 4 + shadcn/ui + Radix UI + TanStack Table + Framer Motion + paket internal @erp/ui akan menghasilkan antarmuka yang modern, cepat, konsisten, mudah dipelihara, dan siap berkembang menjadi ERP skala enterprise. Setelah itu langsung push ke github, kalo bisa tiap proses langsung push ke github, tanpa menunggu sampai semua kelar (pake bahasa Indonesia),
