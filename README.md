@@ -6,6 +6,20 @@ Dibangun dengan **Laravel 12** (backend API) + **Next.js 15** (frontend), menggu
 
 ---
 
+## Daftar Isi
+
+- [Stack Teknologi](#stack-teknologi)
+- [Struktur Monorepo](#struktur-monorepo)
+- [Arsitektur Backend (Laravel)](#arsitektur-backend-laravel)
+- [Arsitektur Frontend (Next.js)](#arsitektur-frontend-nextjs)
+- [Arsitektur Database](#arsitektur-database)
+- [Cara Menjalankan (Development)](#cara-menjalankan-development)
+- [Roadmap](#roadmap)
+- [Standar Pengembangan](#standar-pengembangan)
+- [Lisensi](#lisensi)
+
+---
+
 ## Stack Teknologi
 
 | Layer | Teknologi |
@@ -111,6 +125,73 @@ frontend/packages/
 
 ---
 
+## Arsitektur Database
+
+Database menggunakan **PostgreSQL 16** dengan desain modular mengikuti domain bisnis. Setiap modul memiliki tabel-tabelenya sendiri, namun terhubung melalui foreign key yang jelas.
+
+### Prinsip Desain
+
+- **Integer PK** (`bigint GENERATED ALWAYS AS IDENTITY`) untuk performa tinggi pada tabel transaksional
+- **UUID PK** untuk tabel yang terekspos ke publik (auth, profil)
+- **Soft Deletes** pada tabel utama (`deleted_at`) untuk audit trail
+- **Audit Columns** (`created_by`, `updated_at`, `created_at`) di semua tabel
+- **Indexing** pada foreign key dan kolom yang sering di-query
+- **Row Level Security (RLS)** untuk isolasi data antar pengguna
+
+### Skema Tabel (Phase 1 — Core System)
+
+#### Core & Auth
+
+| Tabel | Deskripsi | Kolom Utama |
+|---|---|---|
+| `users` | Akun pengguna sistem | `id`, `name`, `email`, `password` |
+| `profiles` | Data tambahan pengguna | `id` (FK→users), `full_name`, `phone`, `role`, `avatar_url` |
+| `departments` | Master departemen | `id`, `code`, `name`, `head_name`, `is_active` |
+| `positions` | Master jabatan | `id`, `code`, `name`, `department_id` (FK→departments) |
+| `units` | Master satuan ukur | `id`, `code`, `name`, `is_active` |
+| `material_categories` | Master kategori material | `id`, `code`, `name`, `is_active` |
+
+#### Project & Contract
+
+| Tabel | Deskripsi | Kolom Utama |
+|---|---|---|
+| `projects` | Data proyek konstruksi | `id`, `code`, `name`, `client_name`, `status`, `contract_value`, `progress_percent`, `start_date`, `end_date` |
+| `project_members` | Anggota tim proyek (M2M) | `id`, `project_id` (FK→projects), `user_id` (FK→profiles), `role` |
+| `contracts` | Kontrak proyek | `id`, `project_id` (FK→projects), `contract_no`, `title`, `type`, `status`, `value`, `signed_date` |
+| `attachments` | Lampiran file (polymorphic) | `id`, `reference_module`, `reference_id`, `file_name`, `file_path` |
+
+### Enum Status
+
+**Project Status:** `planning` → `running` → `completed` | `on_hold` | `cancelled`
+
+**Contract Status:** `draft` → `signed` → `completed` | `terminated`
+
+**Contract Type:** `main` | `subcontract` | `addendum` | `amendment`
+
+### Relasi Antar Tabel (ERD Singkat)
+
+```
+users (1) ──── (1) profiles
+                    │
+                    ├── (1) project_members (N) ──── (N) projects
+                    │                                    │
+                    │                                    ├── (N) contracts
+                    │                                    └── (N) attachments
+                    │
+departments (1) ──── (N) positions
+```
+
+### Roadmap Ekspansi Database
+
+| Phase | Tabel Tambahan (Estimasi) |
+|---|---|
+| Phase 2 | `progress_logs`, `materials`, `material_stocks`, `warehouses`, `equipment`, `equipment_rentals`, `employees`, `qc_inspections`, `hse_incidents` |
+| Phase 3 | `vendors`, `purchase_requests`, `purchase_orders`, `invoices`, `payments`, `cashflows`, `journal_entries` |
+| Phase 4 | `chat_rooms`, `chat_messages`, `notifications`, `vendor_portals` |
+| Phase 5 | `ocr_results`, `ai_assistant_logs`, `digital_signatures`, `wa_messages` |
+
+---
+
 ## Cara Menjalankan (Development)
 
 ### Prasyarat
@@ -146,13 +227,69 @@ Akses:
 
 ## Roadmap
 
-| Phase | Fokus | Status |
+### Phase 1 — Core System ✅ Selesai
+
+| Modul | Fitur | Status |
 |---|---|---|
-| **Phase 1** | Core System: Login, RBAC, Dashboard, Master, Project, Kontrak | 🚧 In Progress |
-| **Phase 2** | Operasional: Progress, Material, Gudang, Peralatan, SDM, QC, HSE | 📋 Planned |
-| **Phase 3** | Komersial: Purchase, Vendor, Invoice, Finance, Cashflow | 📋 Planned |
-| **Phase 4** | Kolaborasi: Chat, Notifikasi Realtime, Portal Owner & Vendor | 📋 Planned |
-| **Phase 5** | Smart: OCR, AI Assistant, Digital Signature, Integrasi WA | 📋 Planned |
+| **Auth** | Login, Register, Logout, Session Management | ✅ Done |
+| **RBAC** | Role-based Access Control (admin, manager, staff) | ✅ Done |
+| **Dashboard** | Statistik proyek, nilai kontrak, progress, status | ✅ Done |
+| **Master Data** | Departemen, Jabatan, Satuan, Kategori Material | ✅ Done |
+| **Project** | CRUD proyek, progress tracking, filter & search | ✅ Done |
+| **Contract** | CRUD kontrak, relasi proyek, tipe & status | ✅ Done |
+| **Database** | 9 tabel core + RLS policies + trigger auto-profile | ✅ Done |
+
+### Phase 2 — Sistem Operasional 📋 Planned
+
+| Modul | Fitur | Prioritas |
+|---|---|---|
+| **Progress** | Log progress harian, milestone, kurva S | Tinggi |
+| **Material** | Master material, stok, permintaan material | Tinggi |
+| **Warehouse** | Mutasi stok, opname, transfer gudang | Tinggi |
+| **Equipment** | Master alat, sewa, jadwal pemeliharaan | Sedang |
+| **Human Resource** | Data karyawan, absensi, penugasan | Sedang |
+| **QC** | Inspeksi mutu, temuan, tindak lanjut | Sedang |
+| **HSE** | Insiden K3, investigasi, laporan | Sedang |
+
+### Phase 3 — Sistem Komersial 📋 Planned
+
+| Modul | Fitur | Prioritas |
+|---|---|---|
+| **Purchase** | PR, PO, penerimaan barang | Tinggi |
+| **Vendor** | Master vendor, evaluasi, kategori | Tinggi |
+| **Invoice** | Invoice vendor, invoice ke klien | Tinggi |
+| **Finance** | Jurnal umum, Buku besar, laporan keuangan | Tinggi |
+| **Cashflow** | Arus kas, anggaran, forecast | Sedang |
+
+### Phase 4 — Sistem Kolaborasi 📋 Planned
+
+| Modul | Fitur | Prioritas |
+|---|---|---|
+| **Chat** | Ruang obrolan per proyek, direct message | Sedang |
+| **Notification** | Notifikasi realtime, push notification | Tinggi |
+| **Owner Portal** | Portal untuk owner melihat progress | Sedang |
+| **Vendor Portal** | Portal vendor untuk PO & invoice | Sedang |
+| **Approval** | Workflow approval multi-level | Tinggi |
+
+### Phase 5 — Sistem Cerdas 📋 Planned
+
+| Modul | Fitur | Prioritas |
+|---|---|---|
+| **OCR** | Ekstraksi data dari dokumen scan | Sedang |
+| **AI Assistant** | Chatbot untuk query data & laporan | Rendah |
+| **Digital Signature** | Tanda tangan digital terverifikasi | Tinggi |
+| **WhatsApp Integration** | Notifikasi & laporan via WA | Sedang |
+| **BI & Analytics** | Dashboard analitik, prediksi, insight | Sedang |
+
+### Ringkasan Progress
+
+```
+Phase 1  ████████████████████ 100%  ✅ Selesai
+Phase 2  ░░░░░░░░░░░░░░░░░░░░   0%  📋 Planned
+Phase 3  ░░░░░░░░░░░░░░░░░░░░   0%  📋 Planned
+Phase 4  ░░░░░░░░░░░░░░░░░░░░   0%  📋 Planned
+Phase 5  ░░░░░░░░░░░░░░░░░░░░   0%  📋 Planned
+```
 
 ---
 
@@ -164,6 +301,8 @@ Akses:
 - **Branch**: `main`, `develop`, `feature/*`, `hotfix/*`
 - **API**: Versioned `/api/v1/`, `/api/v2/` jika ada breaking change
 - **UUID**: Integer PK untuk performa, UUID sebagai identitas publik di URL
+- **Database**: RLS wajib di semua tabel, 4 policy per tabel (SELECT, INSERT, UPDATE, DELETE)
+- **Naming**: `snake_case` untuk tabel & kolom, `PascalCase` untuk model & class
 
 ---
 
