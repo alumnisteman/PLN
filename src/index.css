@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { @apply bg-slate-50 text-slate-900 font-sans; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-primary { @apply btn bg-pln-600 text-white hover:bg-pln-700 shadow-sm hover:shadow-md; }
+  .btn-secondary { @apply btn bg-white text-pln-700 border border-pln-200 hover:bg-pln-50; }
+  .btn-ghost { @apply btn text-slate-600 hover:bg-slate-100; }
+  .btn-danger { @apply btn bg-danger-600 text-white hover:bg-danger-700; }
+  .card { @apply bg-white rounded-xl border border-slate-200 shadow-sm; }
+  .input { @apply w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-pln-500 focus:border-pln-500 transition-colors; }
+  .label { @apply block text-sm font-medium text-slate-700 mb-1.5; }
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .badge-success { @apply badge bg-success-100 text-success-700; }
+  .badge-warning { @apply badge bg-warning-100 text-warning-700; }
+  .badge-danger { @apply badge bg-danger-100 text-danger-700; }
+  .badge-info { @apply badge bg-pln-100 text-pln-700; }
+  .badge-neutral { @apply badge bg-slate-100 text-slate-600; }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
